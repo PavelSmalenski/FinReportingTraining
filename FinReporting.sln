@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinDatabaseLibrary", "FinDatabaseLibrary\FinDatabaseLibrary.csproj", "{BAB83114-035F-4315-BF50-83F4D275CA89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinDataApi", "FinDataApi\FinDataApi.csproj", "{B923B019-42AE-4128-A51F-1DC6B21A9693}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{BAB83114-035F-4315-BF50-83F4D275CA89}.Release|x64.Build.0 = Release|Any CPU
 		{BAB83114-035F-4315-BF50-83F4D275CA89}.Release|x86.ActiveCfg = Release|Any CPU
 		{BAB83114-035F-4315-BF50-83F4D275CA89}.Release|x86.Build.0 = Release|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Debug|x64.Build.0 = Debug|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Debug|x86.Build.0 = Debug|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Release|x64.ActiveCfg = Release|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Release|x64.Build.0 = Release|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Release|x86.ActiveCfg = Release|Any CPU
+		{B923B019-42AE-4128-A51F-1DC6B21A9693}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
