@@ -1,4 +1,8 @@
 
+using FinDatabase;
+using Reports.Rpt1WeeklyBalance;
+using Reports.Rpt1WeeklyBalance.Processing;
+
 namespace FinDataApi;
 
 public class Program
@@ -11,14 +15,21 @@ public class Program
         builder.Services.AddAuthorization();
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        builder.Services.AddOpenApi();
+        // builder.Services.AddOpenApi();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        builder.Services.AddDbContext<FinDatabaseContext>();
+        builder.Services.AddSingleton<WeeklyBalanceDataBuilder>();
 
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
+            // app.MapOpenApi();
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
 
         app.UseHttpsRedirection();
@@ -43,6 +54,17 @@ public class Program
             return forecast;
         })
         .WithName("GetWeatherForecast");
+
+
+        app.MapGet("/rpt607b/data/rows/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId) =>
+        {
+            return Results.Json(await dataBuilder.GetData(dbContext, companyId, accountId));
+        });
+
+        app.MapGet("/rpt607b/data/headings/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId) =>
+        {
+            return Results.Json(await dataBuilder.GetHeaderData(dbContext, companyId, accountId));
+        });
 
         app.Run();
     }
