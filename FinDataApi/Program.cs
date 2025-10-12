@@ -1,5 +1,6 @@
 
 using FinDatabase;
+using Reports.Common;
 using Reports.Rpt1WeeklyBalance;
 using Reports.Rpt1WeeklyBalance.Processing;
 
@@ -20,6 +21,7 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddDbContext<FinDatabaseContext>();
+        builder.Services.AddSingleton<CommonEntriesBuilder>();
         builder.Services.AddSingleton<WeeklyBalanceDataBuilder>();
 
         var app = builder.Build();
@@ -36,9 +38,31 @@ public class Program
 
         app.UseAuthorization();
 
+        MapCommonEndpoints(app);
         MapRpt1Endpoints(app);
 
         app.Run();
+    }
+
+    static void MapCommonEndpoints(WebApplication app)
+    {
+        app.MapGet("/common/companies", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesBuilder dataBuilder) =>
+        {
+            return Results.Json(await dataBuilder.GetCompanyIds(dbContext));
+        });
+        app.MapGet("/common/companies/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesBuilder dataBuilder, int companyId) =>
+        {
+            return Results.Json(await dataBuilder.GetCompany(dbContext, companyId));
+        });
+
+        app.MapGet("/common/accounts/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesBuilder dataBuilder, int companyId) =>
+        {
+            return Results.Json(await dataBuilder.GetAccountIds(dbContext, companyId));
+        });
+        app.MapGet("/common/accounts/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesBuilder dataBuilder, int companyId, int accountId) =>
+        {
+            return Results.Json(await dataBuilder.GetAccount(dbContext, companyId, accountId));
+        });
     }
 
     static void MapRpt1Endpoints(WebApplication app)
