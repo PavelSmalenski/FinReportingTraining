@@ -20,6 +20,8 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddMemoryCache();
+
         builder.Services.AddDbContext<FinDatabaseContext>();
         builder.Services.AddSingleton<CommonEntriesBuilder>();
         builder.Services.AddSingleton<WeeklyBalanceDataBuilder>();

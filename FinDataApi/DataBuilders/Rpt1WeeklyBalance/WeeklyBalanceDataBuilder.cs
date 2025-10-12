@@ -1,6 +1,7 @@
 using FinDatabase;
 using FinDatabase.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Reports.Rpt1WeeklyBalance.Entities;
 using Reports.Rpt1WeeklyBalance.Processing;
 
@@ -8,6 +9,16 @@ namespace Reports.Rpt1WeeklyBalance;
 
 class WeeklyBalanceDataBuilder
 {
+    const int CacheDurationMinutes = 5;
+    const string CacheIdRows = "RPT1_ROWS";
+
+    IMemoryCache _memoryCache;
+
+    public WeeklyBalanceDataBuilder(IMemoryCache memoryCache)
+    {
+        _memoryCache = memoryCache;
+    }
+
     public async Task<WeeklyBalanceHeaderData> GetHeaderData(FinDatabaseContext dbContext, int companyId, int accountId)
     {
         var companyControl = await dbContext.CompanyControls.Where(c => c.CompanyId == companyId)
@@ -66,9 +77,14 @@ class WeeklyBalanceDataBuilder
 
     async Task<WeeklyBalanceData> ExtractReportData(FinDatabaseContext dbContext, int companyId, int accountId)
     {
-        WeeklyBalanceData reportData = new WeeklyBalanceData();
+        WeeklyBalanceData reportData;
 
-        var centersQuery = dbContext.Centers
+        var cacheKey = GetRowsCacheKey(companyId, accountId);
+        if (!_memoryCache.TryGetValue(cacheKey, out reportData))
+        {
+            reportData = new WeeklyBalanceData();
+
+            var centersQuery = dbContext.Centers
             .Where((center) =>
                 center.Id != 0
                 && center.Id != 999998
@@ -124,42 +140,51 @@ class WeeklyBalanceDataBuilder
                 }
             );
 
-        var centersQueryOrderedWithCount = centersQuery
-            .OrderBy(res => res.AccountId)
-            .ThenBy(res => res.CompanyId)
-            .ThenBy(res => res.InternalBank)
-            .ThenBy(res => res.Region)
-            .ThenBy(res => res.CenterId);
+            var centersQueryOrderedWithCount = centersQuery
+                .OrderBy(res => res.AccountId)
+                .ThenBy(res => res.CompanyId)
+                .ThenBy(res => res.InternalBank)
+                .ThenBy(res => res.Region)
+                .ThenBy(res => res.CenterId);
 
-        var centers = await centersQueryOrderedWithCount.ToArrayAsync();
+            var centers = await centersQueryOrderedWithCount.ToArrayAsync();
 
-        // it selects 1 account - should have 1 company as well
-        reportData.CompanyId = centers.First()?.CompanyId ?? -1;
-        reportData.AccountId = centers.First()?.AccountId ?? -1;
+            // it selects 1 account - should have 1 company as well
+            reportData.CompanyId = centers.First()?.CompanyId ?? -1;
+            reportData.AccountId = centers.First()?.AccountId ?? -1;
 
-        foreach (var center in centers)
-        {
-            WeeklyBalanceRow balanceRow = new WeeklyBalanceRow()
+            foreach (var center in centers)
             {
-                Center = center.CenterId % 10000,
+                WeeklyBalanceRow balanceRow = new WeeklyBalanceRow()
+                {
+                    Center = center.CenterId % 10000,
 
-                CenterName = center.CenterName,
-                CenterRegion = center.Region,
-                CenterInternalBank = center.InternalBank,
+                    CenterName = center.CenterName,
+                    CenterRegion = center.Region,
+                    CenterInternalBank = center.InternalBank,
 
-                Balances = WeeklyBalancesCalculation.CalculateBalances(center.CurrentPeriod, center.CtlDayOfWeek, center.Balances, center.WeekActivities)
-            };
+                    Balances = WeeklyBalancesCalculation.CalculateBalances(center.CurrentPeriod, center.CtlDayOfWeek, center.Balances, center.WeekActivities)
+                };
 
-            RegionFilter.ModifyRegion(balanceRow, center.CompanyId, center.CenterId);
+                RegionFilter.ModifyRegion(balanceRow, center.CompanyId, center.CenterId);
 
-            if (balanceRow.Balances.Total != 0)
-            {
-                reportData.Rows.Add(balanceRow);
+                if (balanceRow.Balances.Total != 0)
+                {
+                    reportData.Rows.Add(balanceRow);
+                }
             }
+
+            reportData.TotalCount = reportData.Rows.Count;
+
+            var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(CacheDurationMinutes));
+            _memoryCache.Set(cacheKey, reportData, cacheOptions);
         }
 
-        reportData.TotalCount = reportData.Rows.Count;
-
         return reportData;
+    }
+
+    string GetRowsCacheKey(int companyId, int accountId)
+    {
+        return string.Concat(CacheIdRows, companyId, accountId);
     }
 }
