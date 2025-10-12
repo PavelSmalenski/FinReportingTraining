@@ -36,36 +36,26 @@ public class Program
 
         app.UseAuthorization();
 
-        var summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        MapRpt1Endpoints(app);
 
-        app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-        {
-            var forecast =  Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                {
-                    Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    TemperatureC = Random.Shared.Next(-20, 55),
-                    Summary = summaries[Random.Shared.Next(summaries.Length)]
-                })
-                .ToArray();
-            return forecast;
-        })
-        .WithName("GetWeatherForecast");
+        app.Run();
+    }
 
-
-        app.MapGet("/rpt607b/data/rows/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId) =>
+    static void MapRpt1Endpoints(WebApplication app)
+    {
+        app.MapGet("/rpt1/rows/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId) =>
         {
             return Results.Json(await dataBuilder.GetData(dbContext, companyId, accountId));
         });
 
-        app.MapGet("/rpt607b/data/headings/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId) =>
+        app.MapGet("/rpt1/heading/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId) =>
         {
             return Results.Json(await dataBuilder.GetHeaderData(dbContext, companyId, accountId));
         });
 
-        app.Run();
+        app.MapGet("/rpt1/total/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId, int? provinceId) =>
+        {
+            return Results.Json(await dataBuilder.GetTotal(dbContext, companyId, accountId, provinceId));
+        });
     }
 }

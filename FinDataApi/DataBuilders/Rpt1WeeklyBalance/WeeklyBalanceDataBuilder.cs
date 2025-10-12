@@ -51,8 +51,8 @@ class WeeklyBalanceDataBuilder
     {
         var data = await ExtractReportData(dbContext, companyId, accountId);
         var rows = provinceId == null
-                    ? data.Rows
-                    : data.Rows.Where(row => row.CenterRegion == provinceId);
+            ? data.Rows
+            : data.Rows.Where(row => row.CenterRegion == provinceId);
         return new WeeklyBalances()
         {
             BalanceDay1 = rows.Sum(row => row.Balances.BalanceDay1),
