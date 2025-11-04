@@ -1,5 +1,4 @@
-﻿using Moq;
-using Reports.Rpt1WeeklyBalance.Entities;
+﻿using Entities.Reports.Rpt1WeeklyBalance;
 
 namespace FinDataApi.Tests;
 
