@@ -4,10 +4,10 @@ using Entities.Reports.Rpt1WeeklyBalance;
 
 namespace Handlers.Reports.Rpt1WeeklyBalance;
 
-class WeeklyBalancesCalculator
+public class WeeklyBalancesCalculator
 {
     
-    internal static WeeklyBalances CalculateBalances(int currentPeriod, int ctlDayOfWeek, CurrentYearEndingBalance currentYearEndingBalance, WeekDailyActivity weekDailyActivity)
+    public static WeeklyBalances CalculateBalances(int currentPeriod, int ctlDayOfWeek, CurrentYearEndingBalance currentYearEndingBalance, WeekDailyActivity weekDailyActivity)
     {
         if (ctlDayOfWeek < 1 || ctlDayOfWeek > 7)
         {
