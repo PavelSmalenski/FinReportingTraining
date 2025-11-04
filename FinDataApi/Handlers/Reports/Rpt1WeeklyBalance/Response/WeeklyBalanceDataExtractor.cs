@@ -1,20 +1,21 @@
 using FinDatabase;
-using FinDatabase.Entities;
+using Handlers.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Reports.Rpt1WeeklyBalance.Entities;
-using Reports.Rpt1WeeklyBalance.Processing;
 
-namespace Reports.Rpt1WeeklyBalance;
+using Entities.Reports.Rpt1WeeklyBalance;
+using Entities.Reports.Rpt1WeeklyBalance.Response;
 
-class WeeklyBalanceDataBuilder
+namespace Handlers.Reports.Rpt1WeeklyBalance.Response;
+
+class WeeklyBalanceDataExtractor
 {
     const int CacheDurationMinutes = 5;
     const string CacheIdRows = "RPT1_ROWS";
 
     IMemoryCache _memoryCache;
 
-    public WeeklyBalanceDataBuilder(IMemoryCache memoryCache)
+    public WeeklyBalanceDataExtractor(IMemoryCache memoryCache)
     {
         _memoryCache = memoryCache;
     }
@@ -25,21 +26,10 @@ class WeeklyBalanceDataBuilder
                                                             .FirstOrDefaultAsync();
 
         WeeklyBalanceControlDates weeklyBalanceControlDates = companyControl is not null
-            ? WeeklyBalanceDatesBuilder.GetDates(companyControl.CtlDayOfWeek, companyControl.Cbd)
+            ? WeeklyBalancesDatesCalculator.GetDates(companyControl.CtlDayOfWeek, companyControl.Cbd)
             : new WeeklyBalanceControlDates();
 
-        string ibt;
-        string ibtName;
-        if (accountId == 817930012 || accountId == 830480013 || accountId == 850410002)
-        {
-            ibt = "4219";
-            ibtName = "Help desk";
-        }
-        else
-        {
-            ibt = "6294";
-            ibtName = "Accounting";
-        }
+        (string ibt, string ibtName) = IbtGenerator.GetIbt(accountId);
 
         var account = await dbContext.Accounts.Where(acc => acc.CompanyId == companyId && acc.Id == accountId)
                                               .FirstOrDefaultAsync();
@@ -157,16 +147,12 @@ class WeeklyBalanceDataBuilder
             {
                 WeeklyBalanceRow balanceRow = new WeeklyBalanceRow()
                 {
-                    Center = center.CenterId % 10000,
-
-                    CenterName = center.CenterName,
-                    CenterRegion = center.Region,
-                    CenterInternalBank = center.InternalBank,
-
-                    Balances = WeeklyBalancesCalculation.CalculateBalances(center.CurrentPeriod, center.CtlDayOfWeek, center.Balances, center.WeekActivities)
+                    Center              = center.CenterId % 10000,
+                    CenterName          = center.CenterName,
+                    CenterRegion        = CenterRegionGenerator.GetModifiedRegion(center.CompanyId, center.CenterId, center.Region),
+                    CenterInternalBank  = center.InternalBank,
+                    Balances            = WeeklyBalancesCalculator.CalculateBalances(center.CurrentPeriod, center.CtlDayOfWeek, center.Balances, center.WeekActivities)
                 };
-
-                RegionFilter.ModifyRegion(balanceRow, center.CompanyId, center.CenterId);
 
                 if (balanceRow.Balances.Total != 0)
                 {

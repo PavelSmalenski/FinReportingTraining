@@ -2,25 +2,25 @@ using FinDatabase;
 using FinDatabase.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Reports.Common;
+namespace Extensions.Common;
 
-class CommonEntriesBuilder
+static class FinDatabaseContextExtension
 {
-    public async Task<int[]> GetCompanyIds(FinDatabaseContext dbContext)
+    public static async Task<int[]> GetCompanyIds(this FinDatabaseContext dbContext)
     {
         return await dbContext.Companies
             .Select(c => c.Id)
             .ToArrayAsync();
     }
 
-    public async Task<Company?> GetCompany(FinDatabaseContext dbContext, int companyId)
+    public static async Task<Company?> GetCompany(this FinDatabaseContext dbContext, int companyId)
     {
         return await dbContext.Companies
             .Where(comp => comp.Id == companyId)
             .FirstOrDefaultAsync();
     }
 
-    public async Task<int[]> GetAccountIds(FinDatabaseContext dbContext, int companyId)
+    public static async Task<int[]> GetAccountIds(this FinDatabaseContext dbContext, int companyId)
     {
         return await dbContext.Accounts
             .Where(a => a.CompanyId == companyId)
@@ -28,7 +28,7 @@ class CommonEntriesBuilder
             .ToArrayAsync();
     }
 
-    public async Task<Account?> GetAccount(FinDatabaseContext dbContext, int companyId, int accountId)
+    public static async Task<Account?> GetAccount(this FinDatabaseContext dbContext, int companyId, int accountId)
     {
         return await dbContext.Accounts
             .Where(acc => acc.CompanyId == companyId && acc.Id == accountId)
