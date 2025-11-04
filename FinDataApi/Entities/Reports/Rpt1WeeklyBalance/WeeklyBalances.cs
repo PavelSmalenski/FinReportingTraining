@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Reports.Rpt1WeeklyBalance.Entities;
-
+namespace Entities.Reports.Rpt1WeeklyBalance;
 public record struct WeeklyBalances (
     decimal BalanceDay1,
     decimal BalanceDay2,

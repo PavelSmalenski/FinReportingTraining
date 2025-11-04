@@ -1,12 +1,12 @@
 using FinDatabase;
-using FinDatabase.Entities;
 using Handlers.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Reports.Rpt1WeeklyBalance.Entities;
-using Reports.Rpt1WeeklyBalance.Processing;
 
-namespace Reports.Rpt1WeeklyBalance;
+using Entities.Reports.Rpt1WeeklyBalance;
+using Entities.Reports.Rpt1WeeklyBalance.Response;
+
+namespace Handlers.Reports.Rpt1WeeklyBalance.Response;
 
 class WeeklyBalanceDataExtractor
 {
@@ -149,7 +149,7 @@ class WeeklyBalanceDataExtractor
                 {
                     Center              = center.CenterId % 10000,
                     CenterName          = center.CenterName,
-                    CenterRegion        = CenterRegionCalculator.GetModifiedRegion(center.CompanyId, center.CenterId, center.Region),
+                    CenterRegion        = CenterRegionGenerator.GetModifiedRegion(center.CompanyId, center.CenterId, center.Region),
                     CenterInternalBank  = center.InternalBank,
                     Balances            = WeeklyBalancesCalculator.CalculateBalances(center.CurrentPeriod, center.CtlDayOfWeek, center.Balances, center.WeekActivities)
                 };

@@ -1,7 +1,8 @@
 using FinDatabase.Entities;
-using Reports.Rpt1WeeklyBalance.Entities;
+using Entities.Common;
+using Entities.Reports.Rpt1WeeklyBalance;
 
-namespace Reports.Rpt1WeeklyBalance.Processing;
+namespace Handlers.Reports.Rpt1WeeklyBalance;
 
 class WeeklyBalancesCalculator
 {

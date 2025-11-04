@@ -1,8 +1,6 @@
-using Reports.Rpt1WeeklyBalance.Entities;
+namespace Handlers.Common;
 
-namespace Reports.Rpt1WeeklyBalance.Processing;
-
-static class CenterRegionCalculator
+static class CenterRegionGenerator
 {
     public static byte GetModifiedRegion(int companyId, int centerId, byte baseRegion)
     {

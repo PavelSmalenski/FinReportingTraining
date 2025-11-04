@@ -1,4 +1,4 @@
-namespace Reports.Rpt1WeeklyBalance.Entities;
+namespace Entities.Reports.Rpt1WeeklyBalance;
 
 public record struct WeeklyBalanceRow(
     int    Center,

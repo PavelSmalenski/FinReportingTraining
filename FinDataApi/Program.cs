@@ -1,8 +1,7 @@
 
 using FinDatabase;
 using Reports.Common;
-using Reports.Rpt1WeeklyBalance;
-using Reports.Rpt1WeeklyBalance.Processing;
+using Handlers.Reports.Rpt1WeeklyBalance.Response;
 
 namespace FinDataApi;
 
