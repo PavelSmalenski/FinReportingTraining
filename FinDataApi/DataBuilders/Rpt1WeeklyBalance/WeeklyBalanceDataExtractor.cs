@@ -1,5 +1,6 @@
 using FinDatabase;
 using FinDatabase.Entities;
+using Handlers.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Reports.Rpt1WeeklyBalance.Entities;
@@ -28,18 +29,7 @@ class WeeklyBalanceDataExtractor
             ? WeeklyBalancesDatesCalculator.GetDates(companyControl.CtlDayOfWeek, companyControl.Cbd)
             : new WeeklyBalanceControlDates();
 
-        string ibt;
-        string ibtName;
-        if (accountId == 817930012 || accountId == 830480013 || accountId == 850410002)
-        {
-            ibt = "4219";
-            ibtName = "Help desk";
-        }
-        else
-        {
-            ibt = "6294";
-            ibtName = "Accounting";
-        }
+        (string ibt, string ibtName) = IbtGenerator.GetIbt(accountId);
 
         var account = await dbContext.Accounts.Where(acc => acc.CompanyId == companyId && acc.Id == accountId)
                                               .FirstOrDefaultAsync();
