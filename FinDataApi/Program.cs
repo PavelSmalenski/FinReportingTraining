@@ -12,6 +12,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddCors();
+
         // Add services to the container.
         builder.Services.AddAuthorization();
 
@@ -38,7 +40,10 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseCors(o => o.AllowAnyOrigin());
+
         app.UseAuthorization();
+
 
         MapCommonEndpoints(app);
         MapRpt1Endpoints(app);
