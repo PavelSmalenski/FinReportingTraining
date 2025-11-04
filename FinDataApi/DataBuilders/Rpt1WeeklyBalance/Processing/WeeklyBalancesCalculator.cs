@@ -3,7 +3,7 @@ using Reports.Rpt1WeeklyBalance.Entities;
 
 namespace Reports.Rpt1WeeklyBalance.Processing;
 
-class WeeklyBalancesCalculation
+class WeeklyBalancesCalculator
 {
     
     internal static WeeklyBalances CalculateBalances(int currentPeriod, int ctlDayOfWeek, CurrentYearEndingBalance currentYearEndingBalance, WeekDailyActivity weekDailyActivity)

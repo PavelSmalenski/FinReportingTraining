@@ -2,7 +2,7 @@ using Reports.Rpt1WeeklyBalance.Entities;
 
 namespace Reports.Rpt1WeeklyBalance.Processing;
 
-class WeeklyBalanceDatesBuilder
+class WeeklyBalancesDatesCalculator
 {
     internal static WeeklyBalanceControlDates GetDates(int ctlDayOfWeek, DateTime cbd)
     {

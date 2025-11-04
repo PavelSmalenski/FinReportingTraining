@@ -2,7 +2,7 @@ using Reports.Rpt1WeeklyBalance.Entities;
 
 namespace Reports.Rpt1WeeklyBalance.Processing;
 
-static class RegionFilter
+static class CenterRegionCalculator
 {
     public static byte GetModifiedRegion(int companyId, int centerId, byte baseRegion)
     {

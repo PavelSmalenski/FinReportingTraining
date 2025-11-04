@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Reports.Common;
 
-class CommonEntriesBuilder
+class CommonEntriesReader
 {
     public async Task<int[]> GetCompanyIds(FinDatabaseContext dbContext)
     {

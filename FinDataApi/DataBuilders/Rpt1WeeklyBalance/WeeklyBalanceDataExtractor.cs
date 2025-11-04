@@ -7,14 +7,14 @@ using Reports.Rpt1WeeklyBalance.Processing;
 
 namespace Reports.Rpt1WeeklyBalance;
 
-class WeeklyBalanceDataBuilder
+class WeeklyBalanceDataExtractor
 {
     const int CacheDurationMinutes = 5;
     const string CacheIdRows = "RPT1_ROWS";
 
     IMemoryCache _memoryCache;
 
-    public WeeklyBalanceDataBuilder(IMemoryCache memoryCache)
+    public WeeklyBalanceDataExtractor(IMemoryCache memoryCache)
     {
         _memoryCache = memoryCache;
     }
@@ -25,7 +25,7 @@ class WeeklyBalanceDataBuilder
                                                             .FirstOrDefaultAsync();
 
         WeeklyBalanceControlDates weeklyBalanceControlDates = companyControl is not null
-            ? WeeklyBalanceDatesBuilder.GetDates(companyControl.CtlDayOfWeek, companyControl.Cbd)
+            ? WeeklyBalancesDatesCalculator.GetDates(companyControl.CtlDayOfWeek, companyControl.Cbd)
             : new WeeklyBalanceControlDates();
 
         string ibt;
@@ -159,9 +159,9 @@ class WeeklyBalanceDataBuilder
                 {
                     Center              = center.CenterId % 10000,
                     CenterName          = center.CenterName,
-                    CenterRegion        = RegionFilter.GetModifiedRegion(center.CompanyId, center.CenterId, center.Region),
+                    CenterRegion        = CenterRegionCalculator.GetModifiedRegion(center.CompanyId, center.CenterId, center.Region),
                     CenterInternalBank  = center.InternalBank,
-                    Balances            = WeeklyBalancesCalculation.CalculateBalances(center.CurrentPeriod, center.CtlDayOfWeek, center.Balances, center.WeekActivities)
+                    Balances            = WeeklyBalancesCalculator.CalculateBalances(center.CurrentPeriod, center.CtlDayOfWeek, center.Balances, center.WeekActivities)
                 };
 
                 if (balanceRow.Balances.Total != 0)
