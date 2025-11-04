@@ -1,6 +1,6 @@
 
 using FinDatabase;
-using Reports.Common;
+using Extensions.Common;
 using Handlers.Reports.Rpt1WeeklyBalance.Response;
 
 namespace FinDataApi;
@@ -22,7 +22,6 @@ public class Program
         builder.Services.AddMemoryCache();
 
         builder.Services.AddDbContext<FinDatabaseContext>();
-        builder.Services.AddSingleton<CommonEntriesReader>();
         builder.Services.AddSingleton<WeeklyBalanceDataExtractor>();
 
         var app = builder.Build();
@@ -47,22 +46,22 @@ public class Program
 
     static void MapCommonEndpoints(WebApplication app)
     {
-        app.MapGet("/common/companies", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesReader dataBuilder) =>
+        app.MapGet("/common/companies", async (HttpContext context, FinDatabaseContext dbContext) =>
         {
-            return Results.Json(await dataBuilder.GetCompanyIds(dbContext));
+            return Results.Json(await dbContext.GetCompanyIds());
         });
-        app.MapGet("/common/companies/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesReader dataBuilder, int companyId) =>
+        app.MapGet("/common/companies/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, int companyId) =>
         {
-            return Results.Json(await dataBuilder.GetCompany(dbContext, companyId));
+            return Results.Json(await dbContext.GetCompany(companyId));
         });
 
-        app.MapGet("/common/accounts/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesReader dataBuilder, int companyId) =>
+        app.MapGet("/common/accounts/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, int companyId) =>
         {
-            return Results.Json(await dataBuilder.GetAccountIds(dbContext, companyId));
+            return Results.Json(await dbContext.GetAccountIds(companyId));
         });
-        app.MapGet("/common/accounts/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesReader dataBuilder, int companyId, int accountId) =>
+        app.MapGet("/common/accounts/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, int companyId, int accountId) =>
         {
-            return Results.Json(await dataBuilder.GetAccount(dbContext, companyId, accountId));
+            return Results.Json(await dbContext.GetAccount(companyId, accountId));
         });
     }
 
