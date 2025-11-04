@@ -1,8 +1,7 @@
 
 using FinDatabase;
-using Reports.Common;
-using Reports.Rpt1WeeklyBalance;
-using Reports.Rpt1WeeklyBalance.Processing;
+using Extensions.Common;
+using Handlers.Reports.Rpt1WeeklyBalance.Response;
 
 namespace FinDataApi;
 
@@ -23,8 +22,7 @@ public class Program
         builder.Services.AddMemoryCache();
 
         builder.Services.AddDbContext<FinDatabaseContext>();
-        builder.Services.AddSingleton<CommonEntriesBuilder>();
-        builder.Services.AddSingleton<WeeklyBalanceDataBuilder>();
+        builder.Services.AddSingleton<WeeklyBalanceDataExtractor>();
 
         var app = builder.Build();
 
@@ -48,38 +46,38 @@ public class Program
 
     static void MapCommonEndpoints(WebApplication app)
     {
-        app.MapGet("/common/companies", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesBuilder dataBuilder) =>
+        app.MapGet("/common/companies", async (HttpContext context, FinDatabaseContext dbContext) =>
         {
-            return Results.Json(await dataBuilder.GetCompanyIds(dbContext));
+            return Results.Json(await dbContext.GetCompanyIds());
         });
-        app.MapGet("/common/companies/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesBuilder dataBuilder, int companyId) =>
+        app.MapGet("/common/companies/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, int companyId) =>
         {
-            return Results.Json(await dataBuilder.GetCompany(dbContext, companyId));
+            return Results.Json(await dbContext.GetCompany(companyId));
         });
 
-        app.MapGet("/common/accounts/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesBuilder dataBuilder, int companyId) =>
+        app.MapGet("/common/accounts/{companyId}", async (HttpContext context, FinDatabaseContext dbContext, int companyId) =>
         {
-            return Results.Json(await dataBuilder.GetAccountIds(dbContext, companyId));
+            return Results.Json(await dbContext.GetAccountIds(companyId));
         });
-        app.MapGet("/common/accounts/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, CommonEntriesBuilder dataBuilder, int companyId, int accountId) =>
+        app.MapGet("/common/accounts/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, int companyId, int accountId) =>
         {
-            return Results.Json(await dataBuilder.GetAccount(dbContext, companyId, accountId));
+            return Results.Json(await dbContext.GetAccount(companyId, accountId));
         });
     }
 
     static void MapRpt1Endpoints(WebApplication app)
     {
-        app.MapGet("/rpt1/rows/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId) =>
+        app.MapGet("/rpt1/rows/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataExtractor dataBuilder, int companyId, int accountId) =>
         {
             return Results.Json(await dataBuilder.GetData(dbContext, companyId, accountId));
         });
 
-        app.MapGet("/rpt1/heading/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId) =>
+        app.MapGet("/rpt1/heading/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataExtractor dataBuilder, int companyId, int accountId) =>
         {
             return Results.Json(await dataBuilder.GetHeaderData(dbContext, companyId, accountId));
         });
 
-        app.MapGet("/rpt1/total/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataBuilder dataBuilder, int companyId, int accountId, int? provinceId) =>
+        app.MapGet("/rpt1/total/{companyId}/{accountId}", async (HttpContext context, FinDatabaseContext dbContext, WeeklyBalanceDataExtractor dataBuilder, int companyId, int accountId, int? provinceId) =>
         {
             return Results.Json(await dataBuilder.GetTotal(dbContext, companyId, accountId, provinceId));
         });

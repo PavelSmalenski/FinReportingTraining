@@ -1,8 +1,8 @@
-using Reports.Rpt1WeeklyBalance.Entities;
+using Entities.Reports.Rpt1WeeklyBalance;
 
-namespace Reports.Rpt1WeeklyBalance.Processing;
+namespace Handlers.Reports.Rpt1WeeklyBalance;
 
-class WeeklyBalanceDatesBuilder
+class WeeklyBalancesDatesCalculator
 {
     internal static WeeklyBalanceControlDates GetDates(int ctlDayOfWeek, DateTime cbd)
     {
