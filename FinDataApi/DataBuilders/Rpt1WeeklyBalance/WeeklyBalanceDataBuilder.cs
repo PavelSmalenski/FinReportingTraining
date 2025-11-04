@@ -157,16 +157,12 @@ class WeeklyBalanceDataBuilder
             {
                 WeeklyBalanceRow balanceRow = new WeeklyBalanceRow()
                 {
-                    Center = center.CenterId % 10000,
-
-                    CenterName = center.CenterName,
-                    CenterRegion = center.Region,
-                    CenterInternalBank = center.InternalBank,
-
-                    Balances = WeeklyBalancesCalculation.CalculateBalances(center.CurrentPeriod, center.CtlDayOfWeek, center.Balances, center.WeekActivities)
+                    Center              = center.CenterId % 10000,
+                    CenterName          = center.CenterName,
+                    CenterRegion        = RegionFilter.GetModifiedRegion(center.CompanyId, center.CenterId, center.Region),
+                    CenterInternalBank  = center.InternalBank,
+                    Balances            = WeeklyBalancesCalculation.CalculateBalances(center.CurrentPeriod, center.CtlDayOfWeek, center.Balances, center.WeekActivities)
                 };
-
-                RegionFilter.ModifyRegion(balanceRow, center.CompanyId, center.CenterId);
 
                 if (balanceRow.Balances.Total != 0)
                 {
